@@ -1,0 +1,16 @@
+{
+  "name": "circuit-playground-reaction-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kristofer Skyttner",
+  "license": "MIT",
+  "dependencies": {
+    "johnny-five": "^0.15.0",
+    "playground-io": "^0.6.0"
+  }
+}
