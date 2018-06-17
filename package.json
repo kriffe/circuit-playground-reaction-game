@@ -1,7 +1,7 @@
 {
   "name": "circuit-playground-reaction-game",
   "version": "1.0.0",
-  "description": "",
+  "description": "Education code sceleton for getting started with Javascript programming on Circuit Playground",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
