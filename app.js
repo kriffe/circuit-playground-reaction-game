@@ -1,7 +1,9 @@
 var Playground = require('playground-io')
 var five = require('johnny-five')
 
-var MY_USB_PORT = 'COM3'
+
+
+var MY_USB_PORT = 'COM4'
 
 console.log('Connecting to usb port: ', MY_USB_PORT)
 
@@ -13,19 +15,21 @@ var board = new five.Board({
 })
 
 var colors = [
+  'pink',
   'red',
   'orange',
   'yellow',
   'green',
   'blue',
   'indigo',
-  'violet'
+  'violet',
+  'white'
 ]
 
 board.on('ready', function () {
   var pixels = new five.Led.RGBs({
     controller: Playground.Pixel,
-    pins: [0, 1, 2]   // ToDo: Extend to all 10
+    pins: [0, 1, 2, 3, 4, 5 ,6, 7,8,9]   // ToDo: Extend to all 10
   })
 
   var pads = new five.Touchpad({
@@ -43,14 +47,14 @@ board.on('ready', function () {
   var gameIsRunning = false
   var someoneHasReacted = false
   var someoneHasCheated = false
-  var timeToPressButton = -1
+  var timeToPressPad = -1
   var playerOneReactionTime = -1
   var playerTwoReactionTime = -1
 
   var startColorIndex = 0
 
   board.loop(100, () => {
-    if (gameIsRunning === true && someoneHasReacted === false && timeToPressButton === -1) {
+    if (gameIsRunning === true && someoneHasReacted === false && timeToPressPad === -1) {
       startColorIndex++
       if (startColorIndex >= colors.length) {
         startColorIndex = 0
@@ -64,7 +68,7 @@ board.on('ready', function () {
         pixel.color(colors[pixelIndex])
         pixel.intensity(50)
       })
-    } else if (gameIsRunning === true && timeToPressButton !== -1 && someoneHasReacted === false) {
+    } else if (gameIsRunning === true && timeToPressPad !== -1 && someoneHasReacted === false) {
       pixels.forEach((pixel, index) => {
         pixel.color('orange')
         pixel.intensity(100)
@@ -80,17 +84,17 @@ board.on('ready', function () {
 
       if (playerOneIsWinner) {
         if (someoneHasCheated) {
-          pixels[0].color('red')
+          pixels[3].color('red')
         } else {
-          pixels[0].color('green')
+          pixels[3].color('green')
         }
       }
 
       if (playerTwoIsWinner) {
         if (someoneHasCheated) {
-          pixels[1].color('red')
+          pixels[8].color('red')
         } else {
-          pixels[1].color('green')
+          pixels[8].color('green')
         }
       }
 
@@ -117,7 +121,7 @@ board.on('ready', function () {
         console.log(data)
       }
       someoneHasReacted = true
-      someoneHasCheated = timeToPressButton === -1
+      someoneHasCheated = timeToPressPad === -1
 
       piezo.frequency(1200, 200)
     } else {
@@ -131,12 +135,12 @@ board.on('ready', function () {
     gameIsRunning = true
     someoneHasReacted = false
     someoneHasCheated = false
-    timeToPressButton = -1
+    timeToPressPad = -1
     var gameTime = Math.random() * 3000 + 2000
     setTimeout(() => {
       if (!someoneHasReacted) {
         console.log('Times up: Press button!')
-        timeToPressButton = Date.now()
+        timeToPressPad = Date.now()
         piezo.frequency(800, 20)
         pixels.forEach((pixel, index) => {
           pixel.color('yellow')
