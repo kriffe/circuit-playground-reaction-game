@@ -1,12 +1,13 @@
 var Playground = require('playground-io')
 var five = require('johnny-five')
+
+var MY_USB_PORT = 'COM3'
+
+console.log('Connecting to usb port: ', MY_USB_PORT)
+
 var board = new five.Board({
   io: new Playground({
-    port: '/COM3',
-
-    // Passing Firmata options through:
-    // Circuit Playground Firmata seems not to report version before timeout,
-    // lower timeout to reduce initial connection time.
+    port: '/' + MY_USB_PORT,
     reportVersionTimeout: 200
   })
 })
@@ -20,12 +21,11 @@ var colors = [
   'indigo',
   'violet'
 ]
-colors = ['FF0000', 'FF7F00', 'FFFF00', '00FF00', '0000FF', '4B0082', '8F00FF']
 
 board.on('ready', function () {
   var pixels = new five.Led.RGBs({
     controller: Playground.Pixel,
-    pins: [0, 1, 2]
+    pins: [0, 1, 2]   // ToDo: Extend to all 10
   })
 
   var pads = new five.Touchpad({
@@ -38,19 +38,7 @@ board.on('ready', function () {
     pin: 5
   })
 
-  /**
-   * Default Component Controllers
-   * @type {five}
-   */
   var buttons = new five.Buttons([4, 19])
-
-  // var led = new five.Led(13)
-  // led.on()
-
-  var light = new five.Sensor({
-    pin: 'A5',
-    freq: 100
-  })
 
   var gameIsRunning = false
   var someoneHasReacted = false
@@ -84,8 +72,6 @@ board.on('ready', function () {
     } else if (gameIsRunning === true && someoneHasReacted === true) {
       var playerOneIsWinner = playerOneReactionTime !== -1 && (playerTwoReactionTime === -1 || playerOneReactionTime < playerTwoReactionTime)
       var playerTwoIsWinner = playerTwoReactionTime !== -1 && (playerOneReactionTime === -1 || playerTwoReactionTime < playerOneReactionTime)
-
-
 
       pixels.forEach((pixel, index) => {
         pixel.color('blue')
@@ -123,7 +109,6 @@ board.on('ready', function () {
 
   pads.on('change', (data) => {
     if (data.type === 'down') {
-      console.log(data)
       if (data.which[0] === 0) { // Player one
         playerOneReactionTime = Date.now()
       } else if (data.which[0] === 10) {  // Player two
@@ -135,7 +120,6 @@ board.on('ready', function () {
       someoneHasCheated = timeToPressButton === -1
 
       piezo.frequency(1200, 200)
-
     } else {
       piezo.noTone()
     }
