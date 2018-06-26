@@ -1,9 +1,7 @@
 var Playground = require('playground-io')
 var five = require('johnny-five')
 
-
-
-var MY_USB_PORT = 'COM4'
+var MY_USB_PORT = 'COM5'
 
 console.log('Connecting to usb port: ', MY_USB_PORT)
 
@@ -29,17 +27,12 @@ var colors = [
 board.on('ready', function () {
   var pixels = new five.Led.RGBs({
     controller: Playground.Pixel,
-    pins: [0, 1, 2, 3, 4, 5 ,6, 7,8,9]   // ToDo: Extend to all 10
+    pins: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]   // ToDo: Extend to all 10
   })
 
   var pads = new five.Touchpad({
     controller: Playground.Touchpad,
     pads: [0, 10]
-  })
-
-  var piezo = new five.Piezo({
-    controller: Playground.Piezo,
-    pin: 5
   })
 
   var buttons = new five.Buttons([4, 19])
@@ -118,14 +111,11 @@ board.on('ready', function () {
       } else if (data.which[0] === 10) {  // Player two
         playerTwoReactionTime = Date.now()
       } else {
+        console.log('Something else changed:')
         console.log(data)
       }
       someoneHasReacted = true
       someoneHasCheated = timeToPressPad === -1
-
-      piezo.frequency(1200, 200)
-    } else {
-      piezo.noTone()
     }
   })
 
@@ -141,7 +131,6 @@ board.on('ready', function () {
       if (!someoneHasReacted) {
         console.log('Times up: Press button!')
         timeToPressPad = Date.now()
-        piezo.frequency(800, 20)
         pixels.forEach((pixel, index) => {
           pixel.color('yellow')
           pixel.intensity(10)
